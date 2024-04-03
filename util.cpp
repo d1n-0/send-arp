@@ -101,6 +101,7 @@ int getMacFromIP(char* dev, Mac* smac, Ip* sip, Ip* tip, Mac* tmac) {
     int res = pcap_sendpacket(handle, reinterpret_cast<const u_char*>(&packet), sizeof(EthArpPacket));
     if (res != 0) {
         fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(handle));
+        return -1;
     }
 
     while (true) {
@@ -118,10 +119,10 @@ int getMacFromIP(char* dev, Mac* smac, Ip* sip, Ip* tip, Mac* tmac) {
         if (eth->type() != EthHdr::Arp) continue;
 
         ArpHdr* arp = (ArpHdr*)(packet + sizeof(EthHdr));
+        if (arp->op() != ArpHdr::Reply) continue;
         if (arp->hrd() != ArpHdr::ETHER) continue;
         if (arp->pro() != EthHdr::Ip4) continue;
-        if (arp->op() != ArpHdr::Reply) continue;
-        if (arp->sip() != htonl(*tip)) continue;
+        if (htonl(arp->sip()) != htonl(*tip)) continue;
 
         *tmac = arp->smac();
         break;

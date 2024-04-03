@@ -25,10 +25,6 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	printf("Attacker MAC: %s\n", std::string(attacker_mac).c_str());
-	printf("Attacker IP: %s\n", std::string(attacker_ip).c_str());
-
-	return 0;
     for (int i = 2; i < argc; i += 2) {
 		Ip sender_ip = Ip(argv[i]);
 		Ip target_ip = Ip(argv[i + 1]);
